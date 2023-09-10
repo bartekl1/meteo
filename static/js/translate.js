@@ -1,4 +1,11 @@
-const textTranslations = [];
+const textTranslations = [
+    "Stacja meteo",
+    "Bieżące odczyty",
+    "Temperatura",
+    "Wilgotność",
+    "Ciśnienie",
+    "Odśwież"
+];
 
 const titleTranslations = {
     "Meteo station": "Stacja meteo",
@@ -6,7 +13,9 @@ const titleTranslations = {
 
 const placeholdersTranslations = {};
 
-const alternativeTextTranslations = {};
+const alternativeTextTranslations = {
+    "Icon": "Ikona"
+};
 
 const elementsTitlesTranslations = {};
 
