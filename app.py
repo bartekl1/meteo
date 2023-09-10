@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, send_file
 
 import bme280
 import smbus2
@@ -39,6 +39,21 @@ with open('configs.json') as file:
 
 with open('version.json') as file:
     current_version = json.load(file)['version']
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_file('static/img/icon.ico')
+
+
+@app.route('/manifest.json')
+def manifest():
+    return send_file('static/manifest.json')
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 @app.route('/api/current_reading')
