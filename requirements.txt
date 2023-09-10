@@ -3,3 +3,4 @@ mysql-connector-python
 pytz
 tzlocal
 RPi.bme280
+w1thermsensor
