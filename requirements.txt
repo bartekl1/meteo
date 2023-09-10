@@ -2,3 +2,4 @@ Flask
 mysql-connector-python
 pytz
 tzlocal
+RPi.bme280
