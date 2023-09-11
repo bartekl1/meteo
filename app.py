@@ -1,4 +1,7 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, request
+import mysql.connector
+import pytz
+import tzlocal
 
 import bme280
 import smbus2
@@ -6,6 +9,7 @@ from w1thermsensor import W1ThermSensor
 
 import json
 import os
+import datetime
 
 app = Flask(__name__)
 
@@ -75,6 +79,55 @@ def current_reading_api():
             "temperature": w1_temperature
         }
     }
+
+
+@app.route('/api/archive_readings/count')
+def count_archive_readings_api():
+    db = mysql.connector.connect(**configs['mysql'])
+    cursor = db.cursor()
+    sql = 'SELECT COUNT(id) FROM readings'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return {'rows_count': result[0][0]}
+
+
+@app.route('/api/archive_readings')
+def archive_readings_api():
+    start_id = request.args.get('startId')
+    try:
+        limit = int(request.args.get('limit'))
+    except Exception:
+        limit = None
+
+    db = mysql.connector.connect(**configs['mysql'])
+    cursor = db.cursor(dictionary=True)
+    if start_id is None and limit is None:
+        sql = 'SELECT * FROM readings'
+        cursor.execute(sql)
+    elif start_id is not None and limit is None:
+        sql = 'SELECT * FROM readings WHERE id >= %s'
+        cursor.execute(sql, (start_id, ))
+    elif start_id is None and limit is not None:
+        sql = 'SELECT * FROM readings LIMIT %s'
+        cursor.execute(sql, (limit, ))
+    else:
+        sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
+        cursor.execute(sql, (start_id, limit))
+    result = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    tz_name = str(tzlocal.get_localzone())
+    tz = pytz.timezone(tz_name)
+    for i in range(len(result)):
+        dt = tz.localize(result[i]['read_time'])
+        iso = dt.isoformat()
+        result[i]['read_time'] = iso
+
+    return json.dumps(result)
 
 
 if __name__ == '__main__':

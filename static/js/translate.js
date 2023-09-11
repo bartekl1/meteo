@@ -4,7 +4,9 @@ const textTranslations = [
     "Temperatura",
     "Wilgotność",
     "Ciśnienie",
-    "Odśwież"
+    "Odśwież",
+    "Odczyty archiwalne",
+    "Data"
 ];
 
 const titleTranslations = {
