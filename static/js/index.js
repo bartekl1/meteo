@@ -113,26 +113,41 @@ function loadArchiveReadings(options) {
                 tBody.append(rowElement);
             });
 
-            document
-                .querySelector("#loading-archive-readings")
-                .classList.add("d-none");
-            document
-                .querySelector("#archive-readings")
-                .classList.remove("d-none");
+            fetch(`/api/archive_readings/count`)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((json) => {
+                    document.querySelector(
+                        "#total-pages"
+                    ).innerHTML = `/ ${Math.ceil(
+                        json.rows_count /
+                            document.querySelector("#rows-number").value
+                    )}`;
+                    document
+                        .querySelector("#loading-archive-readings")
+                        .classList.add("d-none");
+                    document
+                        .querySelector("#archive-readings")
+                        .classList.remove("d-none");
 
-            document
-                .querySelector("#loading-archive-readings2")
-                .classList.add("d-none");
-            document
-                .querySelector("#archive-readings")
-                .querySelector(".table-responsive")
-                .classList.remove("d-none");
+                    document
+                        .querySelector("#loading-archive-readings2")
+                        .classList.add("d-none");
+                    document
+                        .querySelector("#archive-readings")
+                        .querySelector(".table-responsive")
+                        .classList.remove("d-none");
+                });
         });
 }
 
 function refreshArchiveReadings() {
     loadArchiveReadings({
-        startId: document.querySelector("#start-id").value,
+        startId:
+            document.querySelector("#rows-number").value *
+                (document.querySelector("#page").value - 1) +
+            1,
         limit: document.querySelector("#rows-number").value,
     });
 }
@@ -145,7 +160,7 @@ function setFooterPadding() {
 
 setFooterPadding();
 
-window.addEventListener("resize", setFooterPadding  );
+window.addEventListener("resize", setFooterPadding);
 
 loadCurrentReadings();
 
