@@ -6,7 +6,14 @@ const textTranslations = [
     "Ciśnienie",
     "Odśwież",
     "Odczyty archiwalne",
-    "Data"
+    "Data",
+    "Wersja",
+    "Autor",
+    "Profil GitHub",
+    "Repozytorium GitHub",
+    "Dokumentacja",
+    "Biblioteki",
+    "Rejestr zmian",
 ];
 
 const titleTranslations = {
@@ -16,7 +23,7 @@ const titleTranslations = {
 const placeholdersTranslations = {};
 
 const alternativeTextTranslations = {
-    "Icon": "Ikona"
+    Icon: "Ikona",
 };
 
 const elementsTitlesTranslations = {};

@@ -57,7 +57,7 @@ def manifest():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', version=current_version)
 
 
 @app.route('/api/current_reading')
