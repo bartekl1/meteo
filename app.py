@@ -9,7 +9,6 @@ from w1thermsensor import W1ThermSensor
 
 import json
 import os
-import datetime
 
 app = Flask(__name__)
 
