@@ -1,0 +1,14 @@
+{
+    "flask": {
+        "debug": "DEBUG_MODE (as boolean)",
+        "host": "HOST",
+        "port": "PORT (as integer)"
+    },
+    "mysql": {
+        "host": "DATABASE_HOST",
+        "username": "DATABASE_USERNAME",
+        "password": "DATABASE_PASSWORD",
+        "database": "DATABASE_NAME",
+        "port": "DATABASE_PORT (as integer)"
+    }
+}
