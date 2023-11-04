@@ -21,10 +21,10 @@
 
 - Current readings (temperature, humidity, pressure)
 - Archive readings
+- Basic statistics (minimal, maximal, average, amplitude)
 
 ## Planned functions
 
 - Filter archive readings
 - Download archive readings
 - Charts
-- Statistics

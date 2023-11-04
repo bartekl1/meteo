@@ -21,10 +21,10 @@
 
 - Bieżące odczyty (temperatura, wilgotność, ciśnienie)
 - Archiwalne odczyty
+- Proste statystyki (minimalna, maksymalna, średnia, amplituda)
 
 ## Planowane funkcje
 
 - Filtrowanie archiwalnych odczytów
 - Pobieranie archiwalnych odczytów
 - Wykresy
-- Statystyki
