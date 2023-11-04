@@ -14,11 +14,24 @@ app = Flask(__name__)
 
 bme280_port = 1
 bme280_address = 0x76
-bme280_bus = smbus2.SMBus(bme280_port)
 
-bme280.load_calibration_params(bme280_bus, bme280_address)
+bme280_bus = None
+w1_sensor = None
 
-w1_sensor = W1ThermSensor()
+def load_sensors():
+    global bme280_bus, w1_sensor
+
+    bme280_bus = smbus2.SMBus(bme280_port)
+
+    bme280.load_calibration_params(bme280_bus, bme280_address)
+
+    w1_sensor = W1ThermSensor()
+
+
+try:
+    load_sensors()
+except Exception:
+    pass
 
 
 def load_configs(c):
@@ -66,23 +79,40 @@ def index():
 
 @app.route('/api/current_reading')
 def current_reading_api():
-    bme280_data = bme280.sample(bme280_bus, bme280_address)
-    bme280_humidity = bme280_data.humidity
-    bme280_pressure = bme280_data.pressure
-    bme280_temperature = bme280_data.temperature
+    if bme280_bus == None or w1_sensor == None:
+        try:
+            load_sensors()
+        except Exception:
+            return {
+                "status": "error",
+                "error": "sensor_error"
+            }
 
-    w1_temperature = w1_sensor.get_temperature()
+    try:
+        bme280_data = bme280.sample(bme280_bus, bme280_address)
+        bme280_humidity = bme280_data.humidity
+        bme280_pressure = bme280_data.pressure
+        bme280_temperature = bme280_data.temperature
 
-    return {
-        "bme280": {
-            "temperature": bme280_temperature,
-            "humidity": bme280_humidity,
-            "pressure": bme280_pressure
-        },
-        "ds18b20": {
-            "temperature": w1_temperature
+        w1_temperature = w1_sensor.get_temperature()
+
+        return {
+            "status": "ok",
+            "bme280": {
+                "temperature": bme280_temperature,
+                "humidity": bme280_humidity,
+                "pressure": bme280_pressure
+            },
+            "ds18b20": {
+                "temperature": w1_temperature
+            }
         }
-    }
+    
+    except Exception:
+        return {
+            "status": "error",
+            "error": "sensor_error"
+        }
 
 
 @app.route('/api/archive_readings/count')
