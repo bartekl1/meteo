@@ -176,6 +176,120 @@ function loadArchiveReadings(options) {
         });
 }
 
+function loadStats() {
+    document.querySelector("#refresh-statistics").classList.add("d-none");
+    document
+        .querySelector("#refresh-statistics-loading")
+        .classList.remove("d-none");
+
+    fetch("/api/stats")
+        .then((response) => {
+            return response.json();
+        })
+        .then((json) => {
+            document.querySelector("#readings-count").innerHTML =
+                json.readings_count;
+
+            document.querySelector(
+                "#min-bme280-temperature"
+            ).innerHTML = `${json.bme280.temperature.min.value.toFixed(
+                2
+            )} ℃ <br> ${new Date(
+                json.bme280.temperature.min.read_time
+            ).toLocaleString()} <br> #${json.bme280.temperature.min.id}`;
+            document.querySelector(
+                "#min-bme280-humidity"
+            ).innerHTML = `${json.bme280.humidity.min.value.toFixed(
+                2
+            )} % <br> ${new Date(
+                json.bme280.humidity.min.read_time
+            ).toLocaleString()} <br> #${json.bme280.humidity.min.id}`;
+            document.querySelector(
+                "#min-bme280-pressure"
+            ).innerHTML = `${json.bme280.pressure.min.value.toFixed(
+                2
+            )} hPa <br> ${new Date(
+                json.bme280.pressure.min.read_time
+            ).toLocaleString()} <br> #${json.bme280.pressure.min.id}`;
+            document.querySelector(
+                "#min-ds18b20-temperature"
+            ).innerHTML = `${json.ds18b20.temperature.min.value.toFixed(
+                2
+            )} ℃ <br> ${new Date(
+                json.ds18b20.temperature.min.read_time
+            ).toLocaleString()} <br> #${json.ds18b20.temperature.min.id}`;
+
+            document.querySelector(
+                "#max-bme280-temperature"
+            ).innerHTML = `${json.bme280.temperature.max.value.toFixed(
+                2
+            )} ℃ <br> ${new Date(
+                json.bme280.temperature.max.read_time
+            ).toLocaleString()} <br> #${json.bme280.temperature.max.id}`;
+            document.querySelector(
+                "#max-bme280-humidity"
+            ).innerHTML = `${json.bme280.humidity.max.value.toFixed(
+                2
+            )} % <br> ${new Date(
+                json.bme280.humidity.max.read_time
+            ).toLocaleString()} <br> #${json.bme280.humidity.max.id}`;
+            document.querySelector(
+                "#max-bme280-pressure"
+            ).innerHTML = `${json.bme280.pressure.max.value.toFixed(
+                2
+            )} hPa <br> ${new Date(
+                json.bme280.pressure.max.read_time
+            ).toLocaleString()} <br> #${json.bme280.pressure.max.id}`;
+            document.querySelector(
+                "#max-ds18b20-temperature"
+            ).innerHTML = `${json.ds18b20.temperature.max.value.toFixed(
+                2
+            )} ℃ <br> ${new Date(
+                json.ds18b20.temperature.max.read_time
+            ).toLocaleString()} <br> #${json.ds18b20.temperature.max.id}`;
+
+            document.querySelector(
+                "#avg-bme280-temperature"
+            ).innerHTML = `${json.bme280.temperature.avg.value.toFixed(2)} ℃`;
+            document.querySelector(
+                "#avg-bme280-humidity"
+            ).innerHTML = `${json.bme280.humidity.avg.value.toFixed(2)} %`;
+            document.querySelector(
+                "#avg-bme280-pressure"
+            ).innerHTML = `${json.bme280.pressure.avg.value.toFixed(2)} hPa`;
+            document.querySelector(
+                "#avg-ds18b20-temperature"
+            ).innerHTML = `${json.ds18b20.temperature.avg.value.toFixed(2)} ℃`;
+
+            document.querySelector(
+                "#amp-bme280-temperature"
+            ).innerHTML = `${json.bme280.temperature.amp.value.toFixed(2)} ℃`;
+            document.querySelector(
+                "#amp-bme280-humidity"
+            ).innerHTML = `${json.bme280.humidity.amp.value.toFixed(2)} %`;
+            document.querySelector(
+                "#amp-bme280-pressure"
+            ).innerHTML = `${json.bme280.pressure.amp.value.toFixed(2)} hPa`;
+            document.querySelector(
+                "#amp-ds18b20-temperature"
+            ).innerHTML = `${json.ds18b20.temperature.amp.value.toFixed(2)} ℃`;
+
+            document
+                .querySelector("#loading-statistics")
+                .classList.add("d-none");
+            document.querySelector("#statistics").classList.remove("d-none");
+            document
+                .querySelector("#refresh-statistics-div")
+                .classList.remove("d-none");
+            document
+                .querySelector("#refresh-statistics")
+                .classList.remove("d-none");
+            document
+                .querySelector("#refresh-statistics-loading")
+                .classList.add("d-none");
+        });
+}
+
 function refreshArchiveReadings() {
     loadArchiveReadings({
         startId:
@@ -214,3 +328,9 @@ document
 document.querySelectorAll(".archive-readings-settings").forEach((e) => {
     e.addEventListener("change", refreshArchiveReadings);
 });
+
+loadStats();
+
+document
+    .querySelector("#refresh-statistics")
+    .addEventListener("click", loadStats);

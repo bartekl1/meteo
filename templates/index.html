@@ -179,6 +179,93 @@
                     </div>
                 </div>
             </div>
+
+            <div class="frame mt-2">
+                <div class="text-center h3 text-dark-emphasis">
+                    <i class="bi bi-bar-chart-fill"></i>
+                    <span text-id="17">Statistics</span>
+                </div>
+
+                <div class="d-flex justify-content-center my-1" id="loading-statistics">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div id="statistics" class="d-none">
+                    <div class="fs-6">
+                        <span text-id="18">Readings count:</span>
+                        <span id="readings-count"></span>
+                    </div>
+
+                    <div class="table-responsive mt-2">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">
+                                        <i class="bi bi-thermometer-high"></i>
+                                        <span text-id="2">Temperature</span> (BME280)
+                                    </th>
+                                    <th scope="col">
+                                        <i class="bi bi-droplet-fill"></i>
+                                        <span text-id="3">Humidity</span> (BME280)
+                                    </th>
+                                    <th scope="col">
+                                        <i class="bi bi-speedometer"></i>
+                                        <span text-id="4">Pressure</span> (BME280)
+                                    </th>
+                                    <th scope="col">
+                                        <i class="bi bi-thermometer-high"></i>
+                                        <span text-id="2">Temperature</span> (DS18B20)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="col" text-id="19">Minimal</th>
+                                    <td id="min-bme280-temperature"></td>
+                                    <td id="min-bme280-humidity"></td>
+                                    <td id="min-bme280-pressure"></td>
+                                    <td id="min-ds18b20-temperature"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="col" text-id="20">Maximal</th>
+                                    <td id="max-bme280-temperature"></td>
+                                    <td id="max-bme280-humidity"></td>
+                                    <td id="max-bme280-pressure"></td>
+                                    <td id="max-ds18b20-temperature"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="col" text-id="21">Average</th>
+                                    <td id="avg-bme280-temperature"></td>
+                                    <td id="avg-bme280-humidity"></td>
+                                    <td id="avg-bme280-pressure"></td>
+                                    <td id="avg-ds18b20-temperature"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="col" text-id="22">Amplitude</th>
+                                    <td id="amp-bme280-temperature"></td>
+                                    <td id="amp-bme280-humidity"></td>
+                                    <td id="amp-bme280-pressure"></td>
+                                    <td id="amp-ds18b20-temperature"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-2 d-none" id="refresh-statistics-div">
+                    <button class="btn btn-primary" id="refresh-statistics">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+
+                    <button class="btn btn-primary d-none" type="button" disabled id="refresh-statistics-loading">
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span class="visually-hidden" role="status">Loading...</span>
+                    </button>
+                </div>
+            </div>
         </div>
         
         <footer class="w-100 p-2 ps-3 text-white position-absolute bottom-0">

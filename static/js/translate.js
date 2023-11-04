@@ -16,6 +16,12 @@ const textTranslations = [
     "Rejestr zmian",
     "Błąd odczytu czujników",
     "Odwróć kolejność",
+    "Statystyki",
+    "Ilość odczytów:",
+    "Minimalna",
+    "Maksymalna",
+    "Średnia",
+    "Amplituda",
 ];
 
 const titleTranslations = {
