@@ -76,17 +76,28 @@
                         <span text-id="2">Temperature</span> (DS18B20):
                         <span id="ds18b20-temperature"></span> ℃
                     </div>
+                </div>
 
-                    <div class="mt-2">
-                        <button class="btn btn-primary" id="refresh-current-readings">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
-
-                        <button class="btn btn-primary d-none" type="button" disabled id="refresh-current-readings-loading">
-                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                            <span class="visually-hidden" role="status">Loading...</span>
-                        </button>
+                <div class="mt-2 d-none" id="sensor-error">
+                    <div class="d-flex flex-row justify-content-center">
+                        <div class="fs-1 text-danger">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="fs-3 pt-2 ps-2 text-danger">
+                            <span text-id="15">Sensor error</span>
+                        </div>
                     </div>
+                </div>
+
+                <div class="mt-2 d-none" id="refresh-current-readings-div">
+                    <button class="btn btn-primary" id="refresh-current-readings">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+
+                    <button class="btn btn-primary d-none" type="button" disabled id="refresh-current-readings-loading">
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span class="visually-hidden" role="status">Loading...</span>
+                    </button>
                 </div>
             </div>
         

@@ -4,20 +4,37 @@ function loadCurrentReadings() {
             return response.json();
         })
         .then((json) => {
-            document.querySelector("#bme280-temperature").innerHTML =
-                json.bme280.temperature.toFixed(2);
-            document.querySelector("#bme280-humidity").innerHTML =
-                json.bme280.humidity.toFixed(2);
-            document.querySelector("#bme280-pressure").innerHTML =
-                json.bme280.pressure.toFixed(2);
-            document.querySelector("#ds18b20-temperature").innerHTML =
-                json.ds18b20.temperature.toFixed(2);
+            if (json.status === "ok") {
+                document.querySelector("#bme280-temperature").innerHTML =
+                    json.bme280.temperature.toFixed(2);
+                document.querySelector("#bme280-humidity").innerHTML =
+                    json.bme280.humidity.toFixed(2);
+                document.querySelector("#bme280-pressure").innerHTML =
+                    json.bme280.pressure.toFixed(2);
+                document.querySelector("#ds18b20-temperature").innerHTML =
+                    json.ds18b20.temperature.toFixed(2);
+
+                document.querySelector("#sensor-error").classList.add("d-none");
+                document
+                    .querySelector("#current-readings")
+                    .classList.remove("d-none");
+            } else if (
+                json.status === "error" &&
+                json.error === "sensor_error"
+            ) {
+                document
+                    .querySelector("#current-readings")
+                    .classList.add("d-none");
+                document
+                    .querySelector("#sensor-error")
+                    .classList.remove("d-none");
+            }
 
             document
                 .querySelector("#loading-current-readings")
                 .classList.add("d-none");
             document
-                .querySelector("#current-readings")
+                .querySelector("#refresh-current-readings-div")
                 .classList.remove("d-none");
 
             setInterval(refreshCurrentReadings, 30_000);
@@ -34,14 +51,31 @@ function refreshCurrentReadings() {
             return response.json();
         })
         .then((json) => {
-            document.querySelector("#bme280-temperature").innerHTML =
-                json.bme280.temperature.toFixed(2);
-            document.querySelector("#bme280-humidity").innerHTML =
-                json.bme280.humidity.toFixed(2);
-            document.querySelector("#bme280-pressure").innerHTML =
-                json.bme280.pressure.toFixed(2);
-            document.querySelector("#ds18b20-temperature").innerHTML =
-                json.ds18b20.temperature.toFixed(2);
+            if (json.status === "ok") {
+                document.querySelector("#bme280-temperature").innerHTML =
+                    json.bme280.temperature.toFixed(2);
+                document.querySelector("#bme280-humidity").innerHTML =
+                    json.bme280.humidity.toFixed(2);
+                document.querySelector("#bme280-pressure").innerHTML =
+                    json.bme280.pressure.toFixed(2);
+                document.querySelector("#ds18b20-temperature").innerHTML =
+                    json.ds18b20.temperature.toFixed(2);
+
+                document.querySelector("#sensor-error").classList.add("d-none");
+                document
+                    .querySelector("#current-readings")
+                    .classList.remove("d-none");
+            } else if (
+                json.status === "error" &&
+                json.error === "sensor_error"
+            ) {
+                document
+                    .querySelector("#current-readings")
+                    .classList.add("d-none");
+                document
+                    .querySelector("#sensor-error")
+                    .classList.remove("d-none");
+            }
 
             document
                 .querySelector("#refresh-current-readings-loading")

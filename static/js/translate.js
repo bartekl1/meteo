@@ -14,6 +14,7 @@ const textTranslations = [
     "Dokumentacja",
     "Biblioteki",
     "Rejestr zmian",
+    "Błąd czujników",
 ];
 
 const titleTranslations = {
