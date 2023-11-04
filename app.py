@@ -54,6 +54,11 @@ def manifest():
     return send_file('static/manifest.json')
 
 
+@app.route('/manifest_pl.json')
+def manifest_pl():
+    return send_file('static/manifest_pl.json')
+
+
 @app.route('/')
 def index():
     return render_template('index.html', version=current_version)

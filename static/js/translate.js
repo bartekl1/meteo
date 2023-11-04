@@ -34,6 +34,8 @@ if (window.navigator.language.split("-")[0] == "pl") {
     document.querySelector("title").innerHTML =
         titleTranslations[document.querySelector("title").innerHTML];
 
+    document.querySelector("link[rel=manifest]").href = "/manifest_pl.json";
+
     document.querySelectorAll("[text-id]").forEach((e) => {
         e.innerHTML = textTranslations[e.getAttribute("text-id")];
     });
