@@ -135,20 +135,29 @@ def archive_readings_api():
         limit = int(request.args.get('limit'))
     except Exception:
         limit = None
+    # reverse_direction = request.args.get('reverseDirection') == "true"
 
     db = mysql.connector.connect(**configs['mysql'])
     cursor = db.cursor(dictionary=True)
     if start_id is None and limit is None:
         sql = 'SELECT * FROM readings'
+        # if reverse_direction:
+        #     sql += ' ORDER BY id DESC'
         cursor.execute(sql)
     elif start_id is not None and limit is None:
         sql = 'SELECT * FROM readings WHERE id >= %s'
+        # if reverse_direction:
+        #     sql += ' ORDER BY id DESC'
         cursor.execute(sql, (start_id, ))
     elif start_id is None and limit is not None:
         sql = 'SELECT * FROM readings LIMIT %s'
+        # if reverse_direction:
+        #     sql = 'SELECT * FROM readings ORDER BY id DESC LIMIT %s'
         cursor.execute(sql, (limit, ))
     else:
         sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
+        # if reverse_direction:
+        #     sql = 'SELECT * FROM readings WHERE id >= %s ORDER BY id DESC LIMIT %s'
         cursor.execute(sql, (start_id, limit))
     result = cursor.fetchall()
     cursor.close()

@@ -183,6 +183,9 @@ function refreshArchiveReadings() {
                 (document.querySelector("#page").value - 1) +
             1,
         limit: document.querySelector("#rows-number").value,
+        // reverseDirection: document.querySelector("#reverse-direction").checked
+        //     ? "true"
+        //     : "false",
     });
 }
 
