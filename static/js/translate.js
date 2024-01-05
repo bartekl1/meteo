@@ -22,6 +22,7 @@ const textTranslations = [
     "Maksymalna",
     "Średnia",
     "Amplituda",
+    "Podziękowania",
 ];
 
 const titleTranslations = {
@@ -59,4 +60,7 @@ if (window.navigator.language.split("-")[0] == "pl") {
     document.querySelectorAll("[title]").forEach((e) => {
         e.title = elementsTitlesTranslations[e.title];
     });
+
+    document.querySelector("#acknowledgements-link").href = "https://github.com/bartekl1/meteo/blob/main/ACKNOWLEDGEMENTS_PL.md";
+    document.querySelector("#changelog-link").href = "https://github.com/bartekl1/meteo/blob/main/CHANGELOG_PL.md";
 }

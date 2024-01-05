@@ -18,6 +18,7 @@ bme280_address = 0x76
 bme280_bus = None
 w1_sensor = None
 
+
 def load_sensors():
     global bme280_bus, w1_sensor
 
@@ -107,7 +108,7 @@ def current_reading_api():
                 "temperature": w1_temperature
             }
         }
-    
+
     except Exception:
         return {
             "status": "error",
@@ -360,6 +361,7 @@ def stats():
             }
         }
     }
+
 
 if __name__ == '__main__':
     if 'flask' in configs.keys():

@@ -1,6 +1,6 @@
-# Libraries and other software used in the project
+# 🎁 Acknowledgements
 
-## Back-end - Python libraries (PIP packages)
+## PIP libraries
 
 - [Flask](https://flask.palletsprojects.com/)
 - [requests](https://requests.readthedocs.io/)
@@ -10,8 +10,11 @@
 - [RPi.bme280](https://pypi.org/project/RPi.bme280/)
 - [w1thermsensor](https://pypi.org/project/w1thermsensor/)
 
-## Front-end - NPM packages + icons
+## NPM libraries
 
 - [Bootstrap](https://getbootstrap.com/)
 - [Bootstrap Icons](https://icons.getbootstrap.com/)
+
+## Other
+
 - [amCharts weather icons](https://www.amcharts.com/free-animated-svg-weather-icons/)

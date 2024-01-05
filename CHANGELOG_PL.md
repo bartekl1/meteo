@@ -1,4 +1,4 @@
-# Rejestr zmian
+# 🕑 Rejestr zmian
 
 ## 1.1
 
@@ -8,4 +8,4 @@
 
 ## 1.0
 
-**Pierwsza wersja**
+Pierwsza wersja
