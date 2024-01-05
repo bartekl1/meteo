@@ -6,33 +6,10 @@ import tzlocal
 import bme280
 import smbus2
 from w1thermsensor import W1ThermSensor
+from pms5003 import PMS5003
 
 import json
 import os
-
-app = Flask(__name__)
-
-bme280_port = 1
-bme280_address = 0x76
-
-bme280_bus = None
-w1_sensor = None
-
-
-def load_sensors():
-    global bme280_bus, w1_sensor
-
-    bme280_bus = smbus2.SMBus(bme280_port)
-
-    bme280.load_calibration_params(bme280_bus, bme280_address)
-
-    w1_sensor = W1ThermSensor()
-
-
-try:
-    load_sensors()
-except Exception:
-    pass
 
 
 def load_configs(c):
@@ -57,6 +34,36 @@ with open('configs.json') as file:
 with open('version.json') as file:
     current_version = json.load(file)['version']
 
+app = Flask(__name__)
+
+bme280_port = 1
+bme280_address = 0x76
+
+bme280_bus = None
+w1_sensor = None
+pms5003 = None
+
+
+def load_sensors():
+    global bme280_bus, w1_sensor, pms5003
+
+    bme280_bus = smbus2.SMBus(bme280_port)
+
+    bme280.load_calibration_params(bme280_bus, bme280_address)
+
+    w1_sensor = W1ThermSensor()
+
+    try:
+        pms5003.read()
+    except Exception:
+        pms5003 = PMS5003(**configs["pms5003"])
+
+
+try:
+    load_sensors()
+except Exception:
+    pass
+
 
 @app.route('/favicon.ico')
 def favicon():
@@ -80,40 +87,64 @@ def index():
 
 @app.route('/api/current_reading')
 def current_reading_api():
-    if bme280_bus == None or w1_sensor == None:
-        try:
-            load_sensors()
-        except Exception:
-            return {
-                "status": "error",
-                "error": "sensor_error"
-            }
-
     try:
         bme280_data = bme280.sample(bme280_bus, bme280_address)
         bme280_humidity = bme280_data.humidity
         bme280_pressure = bme280_data.pressure
         bme280_temperature = bme280_data.temperature
-
-        w1_temperature = w1_sensor.get_temperature()
-
-        return {
-            "status": "ok",
-            "bme280": {
-                "temperature": bme280_temperature,
-                "humidity": bme280_humidity,
-                "pressure": bme280_pressure
-            },
-            "ds18b20": {
-                "temperature": w1_temperature
-            }
-        }
-
     except Exception:
-        return {
-            "status": "error",
-            "error": "sensor_error"
+        bme280_dict = {}
+        
+        try:
+            load_sensors()
+        except Exception:
+            pass
+    else:
+        bme280_dict = {
+            "temperature": bme280_temperature,
+            "humidity": bme280_humidity,
+            "pressure": bme280_pressure
         }
+
+    try:
+        w1_temperature = w1_sensor.get_temperature()
+    except Exception:
+        ds18b20_dict = {}
+        
+        try:
+            load_sensors()
+        except Exception:
+            pass
+    else:
+        ds18b20_dict = {
+            "temperature": w1_temperature
+        }
+
+    try:
+        pms5003_data = pms5003.read()
+        pms5003_1_0 = pms5003_data.pm_ug_per_m3(1)
+        pms5003_2_5 = pms5003_data.pm_ug_per_m3(2.5)
+        pms5003_10 = pms5003_data.pm_ug_per_m3(10)
+    except Exception:
+        pms5003_dict = {}
+
+        try:
+            load_sensors()
+        except Exception:
+            pass
+    else:
+        pms5003_dict = {
+            "pm1.0": pms5003_1_0,
+            "pm2.5": pms5003_2_5,
+            "pm10": pms5003_10
+        }
+
+    return {
+        "status": "ok",
+        "bme280": bme280_dict,
+        "ds18b20": ds18b20_dict,
+        "pms5003": pms5003_dict
+    }
 
 
 @app.route('/api/archive_readings/count')

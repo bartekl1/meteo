@@ -13,6 +13,12 @@ function loadCurrentReadings() {
                     json.bme280.pressure.toFixed(2);
                 document.querySelector("#ds18b20-temperature").innerHTML =
                     json.ds18b20.temperature.toFixed(2);
+                document.querySelector("#pms5003-pm-1-0").innerHTML =
+                    json.pms5003["pm1.0"];
+                document.querySelector("#pms5003-pm-2-5").innerHTML =
+                    json.pms5003["pm2.5"];
+                document.querySelector("#pms5003-pm-10").innerHTML =
+                    json.pms5003["pm10"];
 
                 document.querySelector("#sensor-error").classList.add("d-none");
                 document

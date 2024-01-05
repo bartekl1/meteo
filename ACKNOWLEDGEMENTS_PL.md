@@ -9,6 +9,7 @@
 - [tzlocal](https://pypi.org/project/tzlocal/)
 - [RPi.bme280](https://pypi.org/project/RPi.bme280/)
 - [w1thermsensor](https://pypi.org/project/w1thermsensor/)
+- [pms5003](https://github.com/pimoroni/pms5003-python)
 
 ## Biblioteki NPM
 
