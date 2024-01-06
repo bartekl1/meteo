@@ -58,6 +58,11 @@
                 <div id="current-readings" class="d-none">
                     <div class="fs-5">
                         <i class="bi bi-thermometer-high"></i>
+                        <span text-id="2">Temperature</span> (DS18B20):
+                        <span id="ds18b20-temperature"></span> ℃
+                    </div>
+                    <div class="fs-5">
+                        <i class="bi bi-thermometer-high"></i>
                         <span text-id="2">Temperature</span> (BME280):
                         <span id="bme280-temperature"></span> ℃
                     </div>
@@ -70,11 +75,6 @@
                         <i class="bi bi-speedometer"></i>
                         <span text-id="4">Pressure</span> (BME280):
                         <span id="bme280-pressure"></span> hPa
-                    </div>
-                    <div class="fs-5">
-                        <i class="bi bi-thermometer-high"></i>
-                        <span text-id="2">Temperature</span> (DS18B20):
-                        <span id="ds18b20-temperature"></span> ℃
                     </div>
                     <div class="fs-5">
                         <i class="bi bi-cloud-haze2"></i>
@@ -172,6 +172,10 @@
                                     </th>
                                     <th scope="col">
                                         <i class="bi bi-thermometer-high"></i>
+                                        <span text-id="2">Temperature</span> (DS18B20)
+                                    </th>
+                                    <th scope="col">
+                                        <i class="bi bi-thermometer-high"></i>
                                         <span text-id="2">Temperature</span> (BME280)
                                     </th>
                                     <th scope="col">
@@ -181,10 +185,6 @@
                                     <th scope="col">
                                         <i class="bi bi-speedometer"></i>
                                         <span text-id="4">Pressure</span> (BME280)
-                                    </th>
-                                    <th scope="col">
-                                        <i class="bi bi-thermometer-high"></i>
-                                        <span text-id="2">Temperature</span> (DS18B20)
                                     </th>
                                     <th scope="col">
                                         <i class="bi bi-cloud-haze2"></i>
@@ -232,6 +232,10 @@
                                     <th scope="col"></th>
                                     <th scope="col">
                                         <i class="bi bi-thermometer-high"></i>
+                                        <span text-id="2">Temperature</span> (DS18B20)
+                                    </th>
+                                    <th scope="col">
+                                        <i class="bi bi-thermometer-high"></i>
                                         <span text-id="2">Temperature</span> (BME280)
                                     </th>
                                     <th scope="col">
@@ -241,10 +245,6 @@
                                     <th scope="col">
                                         <i class="bi bi-speedometer"></i>
                                         <span text-id="4">Pressure</span> (BME280)
-                                    </th>
-                                    <th scope="col">
-                                        <i class="bi bi-thermometer-high"></i>
-                                        <span text-id="2">Temperature</span> (DS18B20)
                                     </th>
                                     <th scope="col">
                                         <i class="bi bi-cloud-haze2"></i>
@@ -263,40 +263,40 @@
                             <tbody>
                                 <tr>
                                     <th scope="col" text-id="19">Minimal</th>
+                                    <td id="min-ds18b20-temperature"></td>
                                     <td id="min-bme280-temperature"></td>
                                     <td id="min-bme280-humidity"></td>
                                     <td id="min-bme280-pressure"></td>
-                                    <td id="min-ds18b20-temperature"></td>
                                     <td id="min-pms5003-pm1-0"></td>
                                     <td id="min-pms5003-pm2-5"></td>
                                     <td id="min-pms5003-pm10"></td>
                                 </tr>
                                 <tr>
                                     <th scope="col" text-id="20">Maximal</th>
+                                    <td id="max-ds18b20-temperature"></td>
                                     <td id="max-bme280-temperature"></td>
                                     <td id="max-bme280-humidity"></td>
                                     <td id="max-bme280-pressure"></td>
-                                    <td id="max-ds18b20-temperature"></td>
                                     <td id="max-pms5003-pm1-0"></td>
                                     <td id="max-pms5003-pm2-5"></td>
                                     <td id="max-pms5003-pm10"></td>
                                 </tr>
                                 <tr>
                                     <th scope="col" text-id="21">Average</th>
+                                    <td id="avg-ds18b20-temperature"></td>
                                     <td id="avg-bme280-temperature"></td>
                                     <td id="avg-bme280-humidity"></td>
                                     <td id="avg-bme280-pressure"></td>
-                                    <td id="avg-ds18b20-temperature"></td>
                                     <td id="avg-pms5003-pm1-0"></td>
                                     <td id="avg-pms5003-pm2-5"></td>
                                     <td id="avg-pms5003-pm10"></td>
                                 </tr>
                                 <tr>
                                     <th scope="col" text-id="22">Amplitude</th>
+                                    <td id="amp-ds18b20-temperature"></td>
                                     <td id="amp-bme280-temperature"></td>
                                     <td id="amp-bme280-humidity"></td>
                                     <td id="amp-bme280-pressure"></td>
-                                    <td id="amp-ds18b20-temperature"></td>
                                     <td id="amp-pms5003-pm1-0"></td>
                                     <td id="amp-pms5003-pm2-5"></td>
                                     <td id="amp-pms5003-pm10"></td>

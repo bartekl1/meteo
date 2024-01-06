@@ -134,6 +134,12 @@ function loadArchiveReadings(options) {
                 dateColumn.innerHTML = new Date(e.read_time).toLocaleString();
                 rowElement.append(dateColumn);
 
+                var ds18b20Temperature = document.createElement("td");
+                ds18b20Temperature.innerHTML = (e.ds18b20_temperature !== null) ? `${e.ds18b20_temperature.toFixed(
+                    2
+                )} ℃` : "-";
+                rowElement.append(ds18b20Temperature);
+
                 var bme280Temperature = document.createElement("td");
                 bme280Temperature.innerHTML = (e.bme280_temperature !== null) ? `${e.bme280_temperature.toFixed(
                     2
@@ -149,12 +155,6 @@ function loadArchiveReadings(options) {
                     2
                 )} hPa` : "-";
                 rowElement.append(bme280Pressure);
-
-                var ds18b20Temperature = document.createElement("td");
-                ds18b20Temperature.innerHTML = (e.ds18b20_temperature !== null) ? `${e.ds18b20_temperature.toFixed(
-                    2
-                )} ℃` : "-";
-                rowElement.append(ds18b20Temperature);
 
                 var pm1_0 = document.createElement("td");
                 pm1_0.innerHTML = (e.pms5003_pm_1_0 !== null) ? `${e.pms5003_pm_1_0} μg/m³` : "-";
