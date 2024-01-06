@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Wrz 10, 2023 at 03:05 PM
--- Wersja serwera: 10.5.19-MariaDB-0+deb11u2
+-- Generation Time: Sty 06, 2024 at 03:50 PM
+-- Wersja serwera: 10.5.21-MariaDB-0+deb11u1
 -- Wersja PHP: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -30,10 +30,13 @@ SET time_zone = "+00:00";
 CREATE TABLE `readings` (
   `id` int(11) NOT NULL,
   `read_time` datetime NOT NULL DEFAULT current_timestamp(),
-  `bme280_temperature` float NOT NULL,
-  `bme280_humidity` float NOT NULL,
-  `bme280_pressure` float NOT NULL,
-  `ds18b20_temperature` float NOT NULL
+  `bme280_temperature` float DEFAULT NULL,
+  `bme280_humidity` float DEFAULT NULL,
+  `bme280_pressure` float DEFAULT NULL,
+  `ds18b20_temperature` float DEFAULT NULL,
+  `pms5003_pm_1_0` int(11) DEFAULT NULL,
+  `pms5003_pm_2_5` int(11) DEFAULT NULL,
+  `pms5003_pm_10` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
