@@ -5,17 +5,15 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/bartekl1/meteo?style=flat-square)
 ![GitHub forks](https://img.shields.io/github/forks/bartekl1/meteo?style=flat-square)
 
-## Zasoby
-
-- 🌐 Strona jest dostępna [tutaj](https://elephantaccount.pythonanywhere.com/).
-- 📖 Dokumentacja jest dostępna [tutaj](https://github.com/bartekl1/ElephantAccount/wiki).
-- 🧾 Rejestr zmian jest dostępny [tutaj](CHANGELOG_PL.md).
-- 📚 Informacja o bibliotekach jest dostępna [tutaj](LIBRARIES.md).
+[📖 Dokumentacja](https://github.com/bartekl1/meteo/wiki)
+[🕑 Rejestr zmian](CHANGELOG_PL.md)
+[🎁 Podziękowania](ACKNOWLEDGEMENTS_PL.md)
 
 ## Dostępne czujniki
 
 - BME280 (temperatura, wilgotność, ciśnienie)
 - DS18B20 (temperatura)
+- PMS5003 (jakość powietrza: PM 1.0, PM 2.5, PM 10)
 
 ## Dostępne funkcje
 
