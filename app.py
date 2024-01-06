@@ -10,6 +10,7 @@ from pms5003 import PMS5003
 
 import json
 import os
+import datetime
 
 
 def load_configs(c):
@@ -139,8 +140,14 @@ def current_reading_api():
             "pm10": pms5003_10
         }
 
+    tz_name = str(tzlocal.get_localzone())
+    tz = pytz.timezone(tz_name)
+    dt = tz.localize(datetime.datetime.now())
+    iso = dt.isoformat()
+
     return {
         "status": "ok",
+        "date": iso,
         "bme280": bme280_dict,
         "ds18b20": ds18b20_dict,
         "pms5003": pms5003_dict
