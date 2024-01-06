@@ -1,5 +1,10 @@
 # 🕑 Changelog
 
+## 1.2
+
+- Add PMS5003 sensor (air quality)
+- Other fixes and improvements
+
 ## 1.1
 
 - Added basic statistics
