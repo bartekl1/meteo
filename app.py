@@ -358,6 +358,111 @@ def stats():
         'value': max_ds18b20_temperature['value'] - min_ds18b20_temperature['value']
     }
 
+    sql = 'SELECT id, pms5003_pm_1_0, read_time FROM readings WHERE pms5003_pm_1_0 = (SELECT MIN(pms5003_pm_1_0) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    min_pms5003_pm_1_0 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_1_0"]
+    }
+
+    sql = 'SELECT id, pms5003_pm_1_0, read_time FROM readings WHERE pms5003_pm_1_0 = (SELECT MAX(pms5003_pm_1_0) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    max_pms5003_pm_1_0 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_1_0"]
+    }
+
+    sql = 'SELECT AVG(pms5003_pm_1_0) FROM readings'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    avg_pms5003_pm_1_0 = {
+        'value': float(result[0]['AVG(pms5003_pm_1_0)'])
+    }
+
+    amp_pms5003_pm_1_0 = {
+        'value': max_pms5003_pm_1_0['value'] - min_pms5003_pm_1_0['value']
+    }
+
+    sql = 'SELECT id, pms5003_pm_2_5, read_time FROM readings WHERE pms5003_pm_2_5 = (SELECT MIN(pms5003_pm_2_5) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    min_pms5003_pm_2_5 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_2_5"]
+    }
+
+    sql = 'SELECT id, pms5003_pm_2_5, read_time FROM readings WHERE pms5003_pm_2_5 = (SELECT MAX(pms5003_pm_2_5) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    max_pms5003_pm_2_5 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_2_5"]
+    }
+
+    sql = 'SELECT AVG(pms5003_pm_2_5) FROM readings'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    avg_pms5003_pm_2_5 = {
+        'value': float(result[0]['AVG(pms5003_pm_2_5)'])
+    }
+
+    amp_pms5003_pm_2_5 = {
+        'value': max_pms5003_pm_2_5['value'] - min_pms5003_pm_2_5['value']
+    }
+
+    sql = 'SELECT id, pms5003_pm_10, read_time FROM readings WHERE pms5003_pm_10 = (SELECT MIN(pms5003_pm_10) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    min_pms5003_pm_10 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_10"]
+    }
+
+    sql = 'SELECT id, pms5003_pm_10, read_time FROM readings WHERE pms5003_pm_10 = (SELECT MAX(pms5003_pm_10) FROM readings);'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    dt = tz.localize(result[0]['read_time'])
+    iso = dt.isoformat()
+    date = iso
+    max_pms5003_pm_10 = {
+        "id": result[0]["id"],
+        "read_time": date,
+        "value": result[0]["pms5003_pm_10"]
+    }
+
+    sql = 'SELECT AVG(pms5003_pm_10) FROM readings'
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    avg_pms5003_pm_10 = {
+        'value': float(result[0]['AVG(pms5003_pm_10)'])
+    }
+
+    amp_pms5003_pm_10 = {
+        'value': max_pms5003_pm_10['value'] - min_pms5003_pm_10['value']
+    }
+
     cursor.close()
     db.close()
 
@@ -389,6 +494,26 @@ def stats():
                 "max": max_ds18b20_temperature,
                 "avg": avg_ds18b20_temperature,
                 "amp": amp_ds18b20_temperature
+            }
+        },
+        "pms5003": {
+            "pm1.0": {
+                "min": min_pms5003_pm_1_0,
+                "max": max_pms5003_pm_1_0,
+                "avg": avg_pms5003_pm_1_0,
+                "amp": amp_pms5003_pm_1_0
+            },
+            "pm2.5": {
+                "min": min_pms5003_pm_2_5,
+                "max": max_pms5003_pm_2_5,
+                "avg": avg_pms5003_pm_2_5,
+                "amp": amp_pms5003_pm_2_5
+            },
+            "pm10": {
+                "min": min_pms5003_pm_10,
+                "max": max_pms5003_pm_10,
+                "avg": avg_pms5003_pm_10,
+                "amp": amp_pms5003_pm_10
             }
         }
     }

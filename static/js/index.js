@@ -242,6 +242,21 @@ function loadStats() {
             )} ℃ <br> ${new Date(
                 json.ds18b20.temperature.min.read_time
             ).toLocaleString()} <br> #${json.ds18b20.temperature.min.id}`;
+            document.querySelector(
+                "#min-pms5003-pm1-0"
+            ).innerHTML = `${json.pms5003["pm1.0"].min.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm1.0"].min.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm1.0"].min.id}`;
+            document.querySelector(
+                "#min-pms5003-pm2-5"
+            ).innerHTML = `${json.pms5003["pm2.5"].min.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm2.5"].min.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm2.5"].min.id}`;
+            document.querySelector(
+                "#min-pms5003-pm10"
+            ).innerHTML = `${json.pms5003["pm10"].min.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm10"].min.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm10"].min.id}`;
 
             document.querySelector(
                 "#max-bme280-temperature"
@@ -271,6 +286,21 @@ function loadStats() {
             )} ℃ <br> ${new Date(
                 json.ds18b20.temperature.max.read_time
             ).toLocaleString()} <br> #${json.ds18b20.temperature.max.id}`;
+            document.querySelector(
+                "#max-pms5003-pm1-0"
+            ).innerHTML = `${json.pms5003["pm1.0"].max.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm1.0"].max.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm1.0"].max.id}`;
+            document.querySelector(
+                "#max-pms5003-pm2-5"
+            ).innerHTML = `${json.pms5003["pm2.5"].max.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm2.5"].max.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm2.5"].max.id}`;
+            document.querySelector(
+                "#max-pms5003-pm10"
+            ).innerHTML = `${json.pms5003["pm10"].max.value} μg/m³ <br> ${new Date(
+                json.pms5003["pm10"].max.read_time
+            ).toLocaleString()} <br> #${json.pms5003["pm10"].max.id}`;
 
             document.querySelector(
                 "#avg-bme280-temperature"
@@ -284,6 +314,15 @@ function loadStats() {
             document.querySelector(
                 "#avg-ds18b20-temperature"
             ).innerHTML = `${json.ds18b20.temperature.avg.value.toFixed(2)} ℃`;
+            document.querySelector(
+                "#avg-pms5003-pm1-0"
+            ).innerHTML = `${json.pms5003["pm1.0"].avg.value.toFixed(2)} μg/m³`;
+            document.querySelector(
+                "#avg-pms5003-pm2-5"
+            ).innerHTML = `${json.pms5003["pm2.5"].avg.value.toFixed(2)} μg/m³`;
+            document.querySelector(
+                "#avg-pms5003-pm10"
+            ).innerHTML = `${json.pms5003["pm10"].avg.value.toFixed(2)} μg/m³`;
 
             document.querySelector(
                 "#amp-bme280-temperature"
@@ -297,6 +336,15 @@ function loadStats() {
             document.querySelector(
                 "#amp-ds18b20-temperature"
             ).innerHTML = `${json.ds18b20.temperature.amp.value.toFixed(2)} ℃`;
+            document.querySelector(
+                "#amp-pms5003-pm1-0"
+            ).innerHTML = `${json.pms5003["pm1.0"].amp.value} μg/m³`;
+            document.querySelector(
+                "#amp-pms5003-pm2-5"
+            ).innerHTML = `${json.pms5003["pm2.5"].amp.value} μg/m³`;
+            document.querySelector(
+                "#amp-pms5003-pm10"
+            ).innerHTML = `${json.pms5003["pm10"].amp.value} μg/m³`;
 
             document
                 .querySelector("#loading-statistics")
