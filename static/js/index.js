@@ -135,26 +135,38 @@ function loadArchiveReadings(options) {
                 rowElement.append(dateColumn);
 
                 var bme280Temperature = document.createElement("td");
-                bme280Temperature.innerHTML = `${e.bme280_temperature.toFixed(
+                bme280Temperature.innerHTML = (e.bme280_temperature !== null) ? `${e.bme280_temperature.toFixed(
                     2
-                )} ℃`;
+                )} ℃` : "-";
                 rowElement.append(bme280Temperature);
 
                 var bme280Humidity = document.createElement("td");
-                bme280Humidity.innerHTML = `${e.bme280_humidity.toFixed(2)} %`;
+                bme280Humidity.innerHTML = (e.bme280_humidity !== null) ? `${e.bme280_humidity.toFixed(2)} %` : "-";
                 rowElement.append(bme280Humidity);
 
                 var bme280Pressure = document.createElement("td");
-                bme280Pressure.innerHTML = `${e.bme280_pressure.toFixed(
+                bme280Pressure.innerHTML = (e.bme280_pressure !== null) ? `${e.bme280_pressure.toFixed(
                     2
-                )} hPa`;
+                )} hPa` : "-";
                 rowElement.append(bme280Pressure);
 
                 var ds18b20Temperature = document.createElement("td");
-                ds18b20Temperature.innerHTML = `${e.ds18b20_temperature.toFixed(
+                ds18b20Temperature.innerHTML = (e.ds18b20_temperature !== null) ? `${e.ds18b20_temperature.toFixed(
                     2
-                )} ℃`;
+                )} ℃` : "-";
                 rowElement.append(ds18b20Temperature);
+
+                var pm1_0 = document.createElement("td");
+                pm1_0.innerHTML = (e.pms5003_pm_1_0 !== null) ? `${e.pms5003_pm_1_0} μg/m³` : "-";
+                rowElement.append(pm1_0);
+
+                var pm2_5 = document.createElement("td");
+                pm2_5.innerHTML = (e.pms5003_pm_2_5 !== null) ? `${e.pms5003_pm_2_5} μg/m³` : "-";
+                rowElement.append(pm2_5);
+
+                var pm10 = document.createElement("td");
+                pm10.innerHTML = (e.pms5003_pm_10 !== null) ? `${e.pms5003_pm_10} μg/m³` : "-";
+                rowElement.append(pm10);
 
                 tBody.append(rowElement);
             });
