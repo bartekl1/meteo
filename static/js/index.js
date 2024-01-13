@@ -5,97 +5,38 @@ function loadCurrentReadings() {
         })
         .then((json) => {
             if (json.status === "ok") {
-                document.querySelector("#bme280-temperature").innerHTML =
-                    json.bme280.temperature.toFixed(2);
-                document.querySelector("#bme280-humidity").innerHTML =
-                    json.bme280.humidity.toFixed(2);
-                document.querySelector("#bme280-pressure").innerHTML =
-                    json.bme280.pressure.toFixed(2);
-                document.querySelector("#ds18b20-temperature").innerHTML =
-                    json.ds18b20.temperature.toFixed(2);
-                document.querySelector("#pms5003-pm-1-0").innerHTML =
-                    json.pms5003["pm1.0"];
-                document.querySelector("#pms5003-pm-2-5").innerHTML =
-                    json.pms5003["pm2.5"];
-                document.querySelector("#pms5003-pm-10").innerHTML =
-                    json.pms5003["pm10"];
+                document.querySelector("#ds18b20-temperature").innerHTML = json.ds18b20.temperature !== null ? `${json.ds18b20.temperature.toFixed(2)}℃` : "-";
+                document.querySelector("#bme280-temperature").innerHTML = json.bme280.temperature !== null ? `${json.bme280.temperature.toFixed(2)}℃` : "-";
+                document.querySelector("#bme280-humidity").innerHTML = json.bme280.humidity !== null ? `${json.bme280.humidity.toFixed(2)}%` : "-";
+                document.querySelector("#bme280-pressure").innerHTML = json.bme280.pressure !== null ? `${json.bme280.pressure.toFixed(2)} hPa` : "-";
+                document.querySelector("#pms5003-pm-1-0").innerHTML = json.pms5003["pm1.0"] !== null ? `${json.pms5003["pm1.0"]} μg/m³` : "-";
+                document.querySelector("#pms5003-pm-2-5").innerHTML = json.pms5003["pm2.5"] !== null ? `${json.pms5003["pm2.5"]} μg/m³` : "-";
+                document.querySelector("#pms5003-pm-10").innerHTML = json.pms5003["pm10"] !== null ? `${json.pms5003["pm10"]} μg/m³` : "-";
 
-                document.querySelector("#sensor-error").classList.add("d-none");
-                document
-                    .querySelector("#current-readings")
-                    .classList.remove("d-none");
-            } else if (
-                json.status === "error" &&
-                json.error === "sensor_error"
-            ) {
-                document
-                    .querySelector("#current-readings")
-                    .classList.add("d-none");
-                document
-                    .querySelector("#sensor-error")
-                    .classList.remove("d-none");
+                document.querySelector("#current-readings-error").classList.add("d-none");
+                document.querySelector("#current-readings").classList.remove("d-none");
+            } else if (json.status === "error" && json.error === "sensor_error") {
+                document.querySelector("#current-readings").classList.add("d-none");
+                document.querySelector("#current-readings-error").classList.remove("d-none");
             }
 
-            document
-                .querySelector("#loading-current-readings")
-                .classList.add("d-none");
-            document
-                .querySelector("#refresh-current-readings-div")
-                .classList.remove("d-none");
-
-            setInterval(refreshCurrentReadings, 30_000);
+            document.querySelector("#loading-current-readings").classList.add("d-none");
+            document.querySelector("#refresh-current-readings-div").classList.remove("d-none");
+            document.querySelector("#refresh-current-readings-loading").classList.add("d-none");
+            document.querySelector("#refresh-current-readings").classList.remove("d-none");
+        }).catch(() => {
+            document.querySelector("#current-readings").classList.add("d-none");
+            document.querySelector("#current-readings-error").classList.remove("d-none");
+            document.querySelector("#refresh-current-readings-loading").classList.add("d-none");
+            document.querySelector("#refresh-current-readings").classList.remove("d-none");
         });
 }
 
 function refreshCurrentReadings() {
     document.querySelector("#refresh-current-readings").classList.add("d-none");
-    document
-        .querySelector("#refresh-current-readings-loading")
-        .classList.remove("d-none");
-    fetch("/api/current_reading")
-        .then((response) => {
-            return response.json();
-        })
-        .then((json) => {
-            if (json.status === "ok") {
-                document.querySelector("#bme280-temperature").innerHTML =
-                    json.bme280.temperature.toFixed(2);
-                document.querySelector("#bme280-humidity").innerHTML =
-                    json.bme280.humidity.toFixed(2);
-                document.querySelector("#bme280-pressure").innerHTML =
-                    json.bme280.pressure.toFixed(2);
-                document.querySelector("#ds18b20-temperature").innerHTML =
-                    json.ds18b20.temperature.toFixed(2);
-                document.querySelector("#pms5003-pm-1-0").innerHTML =
-                    json.pms5003["pm1.0"];
-                document.querySelector("#pms5003-pm-2-5").innerHTML =
-                    json.pms5003["pm2.5"];
-                document.querySelector("#pms5003-pm-10").innerHTML =
-                    json.pms5003["pm10"];
-
-                document.querySelector("#sensor-error").classList.add("d-none");
-                document
-                    .querySelector("#current-readings")
-                    .classList.remove("d-none");
-            } else if (
-                json.status === "error" &&
-                json.error === "sensor_error"
-            ) {
-                document
-                    .querySelector("#current-readings")
-                    .classList.add("d-none");
-                document
-                    .querySelector("#sensor-error")
-                    .classList.remove("d-none");
-            }
-
-            document
-                .querySelector("#refresh-current-readings-loading")
-                .classList.add("d-none");
-            document
-                .querySelector("#refresh-current-readings")
-                .classList.remove("d-none");
-        });
+    document.querySelector("#refresh-current-readings-loading").classList.remove("d-none");
+    
+    loadCurrentReadings();
 }
 
 function loadArchiveReadings(options) {
@@ -137,17 +78,17 @@ function loadArchiveReadings(options) {
                 var ds18b20Temperature = document.createElement("td");
                 ds18b20Temperature.innerHTML = (e.ds18b20_temperature !== null) ? `${e.ds18b20_temperature.toFixed(
                     2
-                )} ℃` : "-";
+                )}℃` : "-";
                 rowElement.append(ds18b20Temperature);
 
                 var bme280Temperature = document.createElement("td");
                 bme280Temperature.innerHTML = (e.bme280_temperature !== null) ? `${e.bme280_temperature.toFixed(
                     2
-                )} ℃` : "-";
+                )}℃` : "-";
                 rowElement.append(bme280Temperature);
 
                 var bme280Humidity = document.createElement("td");
-                bme280Humidity.innerHTML = (e.bme280_humidity !== null) ? `${e.bme280_humidity.toFixed(2)} %` : "-";
+                bme280Humidity.innerHTML = (e.bme280_humidity !== null) ? `${e.bme280_humidity.toFixed(2)}%` : "-";
                 rowElement.append(bme280Humidity);
 
                 var bme280Pressure = document.createElement("td");
@@ -218,14 +159,14 @@ function loadStats() {
                 "#min-bme280-temperature"
             ).innerHTML = `${json.bme280.temperature.min.value.toFixed(
                 2
-            )} ℃ <br> ${new Date(
+            )}℃ <br> ${new Date(
                 json.bme280.temperature.min.read_time
             ).toLocaleString()} <br> #${json.bme280.temperature.min.id}`;
             document.querySelector(
                 "#min-bme280-humidity"
             ).innerHTML = `${json.bme280.humidity.min.value.toFixed(
                 2
-            )} % <br> ${new Date(
+            )}% <br> ${new Date(
                 json.bme280.humidity.min.read_time
             ).toLocaleString()} <br> #${json.bme280.humidity.min.id}`;
             document.querySelector(
@@ -239,7 +180,7 @@ function loadStats() {
                 "#min-ds18b20-temperature"
             ).innerHTML = `${json.ds18b20.temperature.min.value.toFixed(
                 2
-            )} ℃ <br> ${new Date(
+            )}℃ <br> ${new Date(
                 json.ds18b20.temperature.min.read_time
             ).toLocaleString()} <br> #${json.ds18b20.temperature.min.id}`;
             document.querySelector(
@@ -262,14 +203,14 @@ function loadStats() {
                 "#max-bme280-temperature"
             ).innerHTML = `${json.bme280.temperature.max.value.toFixed(
                 2
-            )} ℃ <br> ${new Date(
+            )}℃ <br> ${new Date(
                 json.bme280.temperature.max.read_time
             ).toLocaleString()} <br> #${json.bme280.temperature.max.id}`;
             document.querySelector(
                 "#max-bme280-humidity"
             ).innerHTML = `${json.bme280.humidity.max.value.toFixed(
                 2
-            )} % <br> ${new Date(
+            )}% <br> ${new Date(
                 json.bme280.humidity.max.read_time
             ).toLocaleString()} <br> #${json.bme280.humidity.max.id}`;
             document.querySelector(
@@ -283,7 +224,7 @@ function loadStats() {
                 "#max-ds18b20-temperature"
             ).innerHTML = `${json.ds18b20.temperature.max.value.toFixed(
                 2
-            )} ℃ <br> ${new Date(
+            )}℃ <br> ${new Date(
                 json.ds18b20.temperature.max.read_time
             ).toLocaleString()} <br> #${json.ds18b20.temperature.max.id}`;
             document.querySelector(
@@ -304,16 +245,16 @@ function loadStats() {
 
             document.querySelector(
                 "#avg-bme280-temperature"
-            ).innerHTML = `${json.bme280.temperature.avg.value.toFixed(2)} ℃`;
+            ).innerHTML = `${json.bme280.temperature.avg.value.toFixed(2)}℃`;
             document.querySelector(
                 "#avg-bme280-humidity"
-            ).innerHTML = `${json.bme280.humidity.avg.value.toFixed(2)} %`;
+            ).innerHTML = `${json.bme280.humidity.avg.value.toFixed(2)}%`;
             document.querySelector(
                 "#avg-bme280-pressure"
             ).innerHTML = `${json.bme280.pressure.avg.value.toFixed(2)} hPa`;
             document.querySelector(
                 "#avg-ds18b20-temperature"
-            ).innerHTML = `${json.ds18b20.temperature.avg.value.toFixed(2)} ℃`;
+            ).innerHTML = `${json.ds18b20.temperature.avg.value.toFixed(2)}℃`;
             document.querySelector(
                 "#avg-pms5003-pm1-0"
             ).innerHTML = `${json.pms5003["pm1.0"].avg.value.toFixed(2)} μg/m³`;
@@ -326,16 +267,16 @@ function loadStats() {
 
             document.querySelector(
                 "#amp-bme280-temperature"
-            ).innerHTML = `${json.bme280.temperature.amp.value.toFixed(2)} ℃`;
+            ).innerHTML = `${json.bme280.temperature.amp.value.toFixed(2)}℃`;
             document.querySelector(
                 "#amp-bme280-humidity"
-            ).innerHTML = `${json.bme280.humidity.amp.value.toFixed(2)} %`;
+            ).innerHTML = `${json.bme280.humidity.amp.value.toFixed(2)}%`;
             document.querySelector(
                 "#amp-bme280-pressure"
             ).innerHTML = `${json.bme280.pressure.amp.value.toFixed(2)} hPa`;
             document.querySelector(
                 "#amp-ds18b20-temperature"
-            ).innerHTML = `${json.ds18b20.temperature.amp.value.toFixed(2)} ℃`;
+            ).innerHTML = `${json.ds18b20.temperature.amp.value.toFixed(2)}℃`;
             document.querySelector(
                 "#amp-pms5003-pm1-0"
             ).innerHTML = `${json.pms5003["pm1.0"].amp.value} μg/m³`;
@@ -406,3 +347,5 @@ loadStats();
 document
     .querySelector("#refresh-statistics")
     .addEventListener("click", loadStats);
+
+setInterval(refreshCurrentReadings, 30_000);

@@ -44,20 +44,32 @@ bme280_bus = None
 w1_sensor = None
 pms5003 = None
 
+try:
+    pms5003 = PMS5003(**configs["pms5003"])
+except Exception:
+    pass
+
 
 def load_sensors():
     global bme280_bus, w1_sensor, pms5003
 
-    bme280_bus = smbus2.SMBus(bme280_port)
+    try:
+        bme280.sample(bme280_bus, bme280_address)
+    except Exception:
+        try:
+            bme280_bus = smbus2.SMBus(bme280_port)
 
-    bme280.load_calibration_params(bme280_bus, bme280_address)
-
-    w1_sensor = W1ThermSensor()
+            bme280.load_calibration_params(bme280_bus, bme280_address)
+        except Exception:
+            pass
 
     try:
-        pms5003.read()
+        w1_sensor.get_temperature()
     except Exception:
-        pms5003 = PMS5003(**configs["pms5003"])
+        try:
+            w1_sensor = W1ThermSensor()
+        except Exception:
+            pass
 
 
 try:
@@ -89,17 +101,21 @@ def index():
 @app.route('/api/current_reading')
 def current_reading_api():
     try:
+        load_sensors()
+    except Exception:
+        pass
+
+    try:
         bme280_data = bme280.sample(bme280_bus, bme280_address)
         bme280_humidity = bme280_data.humidity
         bme280_pressure = bme280_data.pressure
         bme280_temperature = bme280_data.temperature
     except Exception:
-        bme280_dict = {}
-        
-        try:
-            load_sensors()
-        except Exception:
-            pass
+        bme280_dict = {
+            "temperature": None,
+            "humidity": None,
+            "pressure": None
+        }
     else:
         bme280_dict = {
             "temperature": bme280_temperature,
@@ -110,12 +126,9 @@ def current_reading_api():
     try:
         w1_temperature = w1_sensor.get_temperature()
     except Exception:
-        ds18b20_dict = {}
-        
-        try:
-            load_sensors()
-        except Exception:
-            pass
+        ds18b20_dict = {
+            "temperature": None
+        }
     else:
         ds18b20_dict = {
             "temperature": w1_temperature
@@ -127,12 +140,11 @@ def current_reading_api():
         pms5003_2_5 = pms5003_data.pm_ug_per_m3(2.5)
         pms5003_10 = pms5003_data.pm_ug_per_m3(10)
     except Exception:
-        pms5003_dict = {}
-
-        try:
-            load_sensors()
-        except Exception:
-            pass
+        pms5003_dict = {
+            "pm1.0": None,
+            "pm2.5": None,
+            "pm10": None
+        }
     else:
         pms5003_dict = {
             "pm1.0": pms5003_1_0,

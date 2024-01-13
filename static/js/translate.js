@@ -23,6 +23,7 @@ const textTranslations = [
     "Średnia",
     "Amplituda",
     "Podziękowania",
+    "Wystąpił błąd",
 ];
 
 const titleTranslations = {
@@ -61,6 +62,8 @@ if (window.navigator.language.split("-")[0] == "pl") {
         e.title = elementsTitlesTranslations[e.title];
     });
 
-    document.querySelector("#acknowledgements-link").href = "https://github.com/bartekl1/meteo/blob/main/ACKNOWLEDGEMENTS_PL.md";
-    document.querySelector("#changelog-link").href = "https://github.com/bartekl1/meteo/blob/main/CHANGELOG_PL.md";
+    document.querySelector("#acknowledgements-link").href =
+        "https://github.com/bartekl1/meteo/blob/main/ACKNOWLEDGEMENTS_PL.md";
+    document.querySelector("#changelog-link").href =
+        "https://github.com/bartekl1/meteo/blob/main/CHANGELOG_PL.md";
 }
