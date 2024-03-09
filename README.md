@@ -5,6 +5,7 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/bartekl1/meteo?style=flat-square)
 ![GitHub forks](https://img.shields.io/github/forks/bartekl1/meteo?style=flat-square)
 
+[⛅ Swarzędz Meteo](https://swarzedzmeteo.pythonanywhere.com/)
 [📖 Documentation](https://github.com/bartekl1/meteo/wiki)
 [🕑 Changelog](CHANGELOG.md)
 [🎁 Acknowledgements](ACKNOWLEDGEMENTS.md)
@@ -18,7 +19,7 @@
 
 ## Available functions
 
-- Current readings (temperature, humidity, pressure)
+- Current readings (temperature, humidity, pressure, air quality)
 - Archive readings
 - Basic statistics (minimal, maximal, average, amplitude)
 

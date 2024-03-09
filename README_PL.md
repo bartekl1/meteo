@@ -5,6 +5,7 @@
 ![GitHub watchers](https://img.shields.io/github/watchers/bartekl1/meteo?style=flat-square)
 ![GitHub forks](https://img.shields.io/github/forks/bartekl1/meteo?style=flat-square)
 
+[⛅ Swarzędz Meteo](https://swarzedzmeteo.pythonanywhere.com/)
 [📖 Dokumentacja](https://github.com/bartekl1/meteo/wiki)
 [🕑 Rejestr zmian](CHANGELOG_PL.md)
 [🎁 Podziękowania](ACKNOWLEDGEMENTS_PL.md)
@@ -17,7 +18,7 @@
 
 ## Dostępne funkcje
 
-- Bieżące odczyty (temperatura, wilgotność, ciśnienie)
+- Bieżące odczyty (temperatura, wilgotność, ciśnienie, jakość powietrza)
 - Archiwalne odczyty
 - Proste statystyki (minimalna, maksymalna, średnia, amplituda)
 
