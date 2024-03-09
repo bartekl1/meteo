@@ -188,28 +188,55 @@ def archive_readings_api():
         limit = None
     # reverse_direction = request.args.get('reverseDirection') == "true"
 
+    try:
+        start_date = request.args.get('startDate')
+        start_date = datetime.datetime.fromisoformat(start_date)
+    except Exception:
+        start_date = None
+    try:
+        end_date = request.args.get('endDate')
+        end_date = datetime.datetime.fromisoformat(end_date)
+    except Exception:
+        end_date = None
+
     db = mysql.connector.connect(**configs['mysql'])
     cursor = db.cursor(dictionary=True)
-    if start_id is None and limit is None:
-        sql = 'SELECT * FROM readings'
-        # if reverse_direction:
-        #     sql += ' ORDER BY id DESC'
-        cursor.execute(sql)
-    elif start_id is not None and limit is None:
-        sql = 'SELECT * FROM readings WHERE id >= %s'
-        # if reverse_direction:
-        #     sql += ' ORDER BY id DESC'
-        cursor.execute(sql, (start_id, ))
-    elif start_id is None and limit is not None:
-        sql = 'SELECT * FROM readings LIMIT %s'
-        # if reverse_direction:
-        #     sql = 'SELECT * FROM readings ORDER BY id DESC LIMIT %s'
-        cursor.execute(sql, (limit, ))
+    if start_date is None and end_date is None:
+        if start_id is None and limit is None:
+            sql = 'SELECT * FROM readings'
+            # if reverse_direction:
+            #     sql += ' ORDER BY id DESC'
+            cursor.execute(sql)
+        elif start_id is not None and limit is None:
+            sql = 'SELECT * FROM readings WHERE id >= %s'
+            # if reverse_direction:
+            #     sql += ' ORDER BY id DESC'
+            cursor.execute(sql, (start_id, ))
+        elif start_id is None and limit is not None:
+            sql = 'SELECT * FROM readings LIMIT %s'
+            # if reverse_direction:
+            #     sql = 'SELECT * FROM readings ORDER BY id DESC LIMIT %s'
+            cursor.execute(sql, (limit, ))
+        else:
+            sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
+            # if reverse_direction:
+            #     sql = 'SELECT * FROM readings WHERE id >= %s ORDER BY id DESC LIMIT %s'
+            cursor.execute(sql, (start_id, limit))
+
     else:
-        sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
-        # if reverse_direction:
-        #     sql = 'SELECT * FROM readings WHERE id >= %s ORDER BY id DESC LIMIT %s'
-        cursor.execute(sql, (start_id, limit))
+        if start_date is None and end_date is None:
+            sql = 'SELECT * FROM readings'
+            cursor.execute(sql)
+        elif start_date is not None and end_date is None:
+            sql = 'SELECT * FROM readings WHERE read_time >= %s'
+            cursor.execute(sql, (start_date, ))
+        elif start_date is None and end_date is not None:
+            sql = 'SELECT * FROM readings WHERE read_time <= %s'
+            cursor.execute(sql, (end_date, ))
+        else:
+            sql = 'SELECT * FROM readings WHERE read_time BETWEEN %s AND %s'
+            cursor.execute(sql, (start_date, end_date, ))
+
     result = cursor.fetchall()
     cursor.close()
     db.close()
