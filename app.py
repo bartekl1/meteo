@@ -135,6 +135,7 @@ def current_reading_api():
         }
 
     try:
+        pms5003.reset()
         pms5003_data = pms5003.read()
         pms5003_1_0 = pms5003_data.pm_ug_per_m3(1)
         pms5003_2_5 = pms5003_data.pm_ug_per_m3(2.5)
