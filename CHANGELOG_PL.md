@@ -1,5 +1,10 @@
 # 🕑 Rejestr zmian
 
+## 1.3
+
+- Naprawiono błąd czujnika jakości powietrza
+- Dodano filtrowanie dat w API archiwalnych odczytów
+
 ## 1.2
 
 - Dodano czujnik PMS5003 (jakość powietrza)

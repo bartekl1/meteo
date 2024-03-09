@@ -1,5 +1,10 @@
 # 🕑 Changelog
 
+## 1.3
+
+- Fixed air quality sensor bug
+- Added date filtering in the archive readings API
+
 ## 1.2
 
 - Add PMS5003 sensor (air quality)
