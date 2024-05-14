@@ -11,6 +11,8 @@ from pms5003 import PMS5003
 import json
 import os
 import datetime
+import time
+import threading
 
 
 def load_configs(c):
@@ -44,38 +46,120 @@ bme280_bus = None
 w1_sensor = None
 pms5003 = None
 
-try:
-    pms5003 = PMS5003(**configs["pms5003"])
-except Exception:
-    pass
+ds18b20_values = {
+    "temperature": None
+}
+ds18b20_loaded = None
+bme280_values = {
+    "temperature": None,
+    "humidity": None,
+    "pressure": None
+}
+bme280_loaded = None
+pms5003_values = {
+    "pm1.0": None,
+    "pm2.5": None,
+    "pm10": None
+}
+pms5003_loaded = None
 
 
-def load_sensors():
-    global bme280_bus, w1_sensor, pms5003
-
+def load_ds18b20():
     try:
-        bme280.sample(bme280_bus, bme280_address)
+        w1_sensor = W1ThermSensor()
     except Exception:
-        try:
-            bme280_bus = smbus2.SMBus(bme280_port)
+        w1_sensor = None
+    return w1_sensor
 
-            bme280.load_calibration_params(bme280_bus, bme280_address)
-        except Exception:
-            pass
 
+def load_bme280():
     try:
-        w1_sensor.get_temperature()
+        bme280_bus = smbus2.SMBus(bme280_port)
+        bme280.load_calibration_params(bme280_bus, bme280_address)
     except Exception:
+        bme280_bus = None
+    return bme280_bus
+
+
+def load_pms5003():
+    try:
+        pms5003 = PMS5003(**configs["pms5003"])
+    except Exception:
+        pms5003 = None
+    return pms5003
+
+
+def measure():
+    global ds18b20_values, ds18b20_loaded, bme280_values, bme280_loaded, pms5003_values, pms5003_loaded
+    ds18b20 = load_ds18b20()
+    bme280_bus = load_bme280()
+    pms5003 = load_pms5003()
+
+    while True:
         try:
-            w1_sensor = W1ThermSensor()
+            ds18b20_temperature = ds18b20.get_temperature()
+            ds18b20_values = {
+                "temperature": ds18b20_temperature
+            }
+            ds18b20_loaded = datetime.datetime.now()
         except Exception:
-            pass
+            if ds18b20_loaded is not None and (datetime.datetime.now() - ds18b20_loaded).seconds > 60:
+                ds18b20_values = {
+                    "temperature": None
+                }
+                ds18b20_loaded = None
+            if ds18b20_loaded is not None and (datetime.datetime.now() - ds18b20_loaded).seconds > 10:
+                ds18b20 = load_ds18b20()
+        try:
+            bme280_data = bme280.sample(bme280_bus, bme280_address)
+            bme280_humidity = bme280_data.humidity
+            bme280_pressure = bme280_data.pressure
+            bme280_temperature = bme280_data.temperature
+            bme280_values = {
+                "temperature": bme280_temperature,
+                "humidity": bme280_humidity,
+                "pressure": bme280_pressure
+            }
+            bme280_loaded = datetime.datetime.now()
+        except Exception:
+            if bme280_loaded is not None and (datetime.datetime.now() - bme280_loaded).seconds > 60:
+                bme280_values = {
+                    "temperature": None,
+                    "humidity": None,
+                    "pressure": None
+                }
+                bme280_loaded = None
+            if bme280_loaded is not None and (datetime.datetime.now() - bme280_loaded).seconds > 10:
+                bme280_bus = load_bme280()
+        try:
+            pms5003.reset()
+            pms5003_data = pms5003.read()
+            pms5003_1_0 = pms5003_data.pm_ug_per_m3(1)
+            pms5003_2_5 = pms5003_data.pm_ug_per_m3(2.5)
+            pms5003_10 = pms5003_data.pm_ug_per_m3(10)
+            pms5003_values = {
+                "pm1.0": pms5003_1_0,
+                "pm2.5": pms5003_2_5,
+                "pm10": pms5003_10
+            }
+            pms5003_loaded = datetime.datetime.now()
+        except Exception:
+            if pms5003_loaded is not None and (datetime.datetime.now() - pms5003_loaded).seconds > 60:
+                pms5003_values = {
+                    "pm1.0": None,
+                    "pm2.5": None,
+                    "pm10": None
+                }
+                pms5003_loaded = None
+            if pms5003_loaded is not None and (datetime.datetime.now() - pms5003_loaded).seconds > 10:
+                pms5003 = load_pms5003()
+        time.sleep(2)
 
 
-try:
-    load_sensors()
-except Exception:
-    pass
+@app.before_first_request
+def start_threads():
+    measure_thread = threading.Thread(target=measure)
+    measure_thread.start()
 
 
 @app.route('/favicon.ico')
@@ -100,70 +184,26 @@ def index():
 
 @app.route('/api/current_reading')
 def current_reading_api():
-    try:
-        load_sensors()
-    except Exception:
-        pass
-
-    try:
-        bme280_data = bme280.sample(bme280_bus, bme280_address)
-        bme280_humidity = bme280_data.humidity
-        bme280_pressure = bme280_data.pressure
-        bme280_temperature = bme280_data.temperature
-    except Exception:
-        bme280_dict = {
-            "temperature": None,
-            "humidity": None,
-            "pressure": None
-        }
-    else:
-        bme280_dict = {
-            "temperature": bme280_temperature,
-            "humidity": bme280_humidity,
-            "pressure": bme280_pressure
-        }
-
-    try:
-        w1_temperature = w1_sensor.get_temperature()
-    except Exception:
-        ds18b20_dict = {
-            "temperature": None
-        }
-    else:
-        ds18b20_dict = {
-            "temperature": w1_temperature
-        }
-
-    try:
-        pms5003.reset()
-        pms5003_data = pms5003.read()
-        pms5003_1_0 = pms5003_data.pm_ug_per_m3(1)
-        pms5003_2_5 = pms5003_data.pm_ug_per_m3(2.5)
-        pms5003_10 = pms5003_data.pm_ug_per_m3(10)
-    except Exception:
-        pms5003_dict = {
-            "pm1.0": None,
-            "pm2.5": None,
-            "pm10": None
-        }
-    else:
-        pms5003_dict = {
-            "pm1.0": pms5003_1_0,
-            "pm2.5": pms5003_2_5,
-            "pm10": pms5003_10
-        }
+    global ds18b20_values, ds18b20_loaded, bme280_values, bme280_loaded, pms5003_values, pms5003_loaded
 
     tz_name = str(tzlocal.get_localzone())
     tz = pytz.timezone(tz_name)
     dt = tz.localize(datetime.datetime.now())
     iso = dt.isoformat()
 
+    ds18b20_date = tz.localize(ds18b20_loaded).isoformat() if ds18b20_loaded is not None else None
+    bme280_date = tz.localize(bme280_loaded).isoformat() if bme280_loaded is not None else None
+    pms5003_date = tz.localize(pms5003_loaded).isoformat() if pms5003_loaded is not None else None
+
     return {
         "status": "ok",
         "date": iso,
-        "bme280": bme280_dict,
-        "ds18b20": ds18b20_dict,
-        "pms5003": pms5003_dict
+        "ds18b20": ds18b20_values,
+        "bme280": bme280_values,
+        "pms5003": pms5003_values,
+        "ds18b20_date": ds18b20_date,
+        "bme280_date": bme280_date,
+        "pms5003_date": pms5003_date
     }
 
 
