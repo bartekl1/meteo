@@ -27,10 +27,12 @@ function loadCurrentReadings() {
         });
 }
 
-function loadArchiveReadings(options) {
-    document.querySelector("#archive-readings").querySelector(".table-responsive").classList.add("d-none");
-    document.querySelector("#loading-archive-readings2").classList.remove("d-none");
-    document.querySelector("#archive-readings-error").classList.add("d-none");
+function loadArchiveReadings(options, silent=false) {
+    if (!silent) {
+        document.querySelector("#archive-readings").querySelector(".table-responsive").classList.add("d-none");
+        document.querySelector("#loading-archive-readings2").classList.remove("d-none");
+        document.querySelector("#archive-readings-error").classList.add("d-none");
+    }
 
     const searchParams = new URLSearchParams(options);
     fetch(`/api/archive_readings?${searchParams.toString()}`)
@@ -275,17 +277,14 @@ function loadStats() {
         });
 }
 
-function refreshArchiveReadings() {
+function refreshArchiveReadings(silent) {
     loadArchiveReadings({
         startId:
             document.querySelector("#rows-number").value *
                 (document.querySelector("#page").value - 1) +
             1,
-        limit: document.querySelector("#rows-number").value,
-        // reverseDirection: document.querySelector("#reverse-direction").checked
-        //     ? "true"
-        //     : "false",
-    });
+        limit: document.querySelector("#rows-number").value
+    }, silent);
 }
 
 function setFooterPadding() {
@@ -302,13 +301,12 @@ loadCurrentReadings();
 
 loadArchiveReadings({ limit: 20 });
 
-document.querySelector("#refresh-archive-readings").addEventListener("click", refreshArchiveReadings);
-
 document.querySelectorAll(".archive-readings-settings").forEach((e) => {
-    e.addEventListener("change", refreshArchiveReadings);
+    e.addEventListener("change", () => { refreshArchiveReadings(false); });
 });
 
 loadStats();
 
 setInterval(loadCurrentReadings, 30_000);
 setInterval(loadStats, 30_000);
+setInterval(() => { refreshArchiveReadings(true); }, 2 * 60_000)
