@@ -288,7 +288,7 @@ def current_reading_api():
     global ds18b20_values, ds18b20_loaded, bme280_values, bme280_loaded, pms5003_values, pms5003_loaded
 
     while (ds18b20_loaded is None or bme280_loaded is None or pms5003_loaded is None) \
-            and (datetime.datetime.now() - started).seconds < 10:
+            and (datetime.datetime.now() - started).seconds < 20:
         time.sleep(1)
 
     tz_name = str(tzlocal.get_localzone())
@@ -327,74 +327,77 @@ def count_archive_readings_api():
 
 @app.route('/api/archive_readings')
 def archive_readings_api():
-    start_id = request.args.get('startId')
     try:
-        limit = int(request.args.get('limit'))
-    except Exception:
-        limit = None
-    # reverse_direction = request.args.get('reverseDirection') == "true"
+        start_id = request.args.get('startId')
+        try:
+            limit = int(request.args.get('limit'))
+        except Exception:
+            limit = None
+        # reverse_direction = request.args.get('reverseDirection') == "true"
 
-    try:
-        start_date = request.args.get('startDate')
-        start_date = datetime.datetime.fromisoformat(start_date)
-    except Exception:
-        start_date = None
-    try:
-        end_date = request.args.get('endDate')
-        end_date = datetime.datetime.fromisoformat(end_date)
-    except Exception:
-        end_date = None
+        try:
+            start_date = request.args.get('startDate')
+            start_date = datetime.datetime.fromisoformat(start_date)
+        except Exception:
+            start_date = None
+        try:
+            end_date = request.args.get('endDate')
+            end_date = datetime.datetime.fromisoformat(end_date)
+        except Exception:
+            end_date = None
 
-    db = mysql.connector.connect(**configs['mysql'])
-    cursor = db.cursor(dictionary=True)
-    if start_date is None and end_date is None:
-        if start_id is None and limit is None:
-            sql = 'SELECT * FROM readings'
-            # if reverse_direction:
-            #     sql += ' ORDER BY id DESC'
-            cursor.execute(sql)
-        elif start_id is not None and limit is None:
-            sql = 'SELECT * FROM readings WHERE id >= %s'
-            # if reverse_direction:
-            #     sql += ' ORDER BY id DESC'
-            cursor.execute(sql, (start_id, ))
-        elif start_id is None and limit is not None:
-            sql = 'SELECT * FROM readings LIMIT %s'
-            # if reverse_direction:
-            #     sql = 'SELECT * FROM readings ORDER BY id DESC LIMIT %s'
-            cursor.execute(sql, (limit, ))
-        else:
-            sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
-            # if reverse_direction:
-            #     sql = 'SELECT * FROM readings WHERE id >= %s ORDER BY id DESC LIMIT %s'
-            cursor.execute(sql, (start_id, limit))
-
-    else:
+        db = mysql.connector.connect(**configs['mysql'])
+        cursor = db.cursor(dictionary=True)
         if start_date is None and end_date is None:
-            sql = 'SELECT * FROM readings'
-            cursor.execute(sql)
-        elif start_date is not None and end_date is None:
-            sql = 'SELECT * FROM readings WHERE read_time >= %s'
-            cursor.execute(sql, (start_date, ))
-        elif start_date is None and end_date is not None:
-            sql = 'SELECT * FROM readings WHERE read_time <= %s'
-            cursor.execute(sql, (end_date, ))
+            if start_id is None and limit is None:
+                sql = 'SELECT * FROM readings'
+                # if reverse_direction:
+                #     sql += ' ORDER BY id DESC'
+                cursor.execute(sql)
+            elif start_id is not None and limit is None:
+                sql = 'SELECT * FROM readings WHERE id >= %s'
+                # if reverse_direction:
+                #     sql += ' ORDER BY id DESC'
+                cursor.execute(sql, (start_id, ))
+            elif start_id is None and limit is not None:
+                sql = 'SELECT * FROM readings LIMIT %s'
+                # if reverse_direction:
+                #     sql = 'SELECT * FROM readings ORDER BY id DESC LIMIT %s'
+                cursor.execute(sql, (limit, ))
+            else:
+                sql = 'SELECT * FROM readings WHERE id >= %s LIMIT %s'
+                # if reverse_direction:
+                #     sql = 'SELECT * FROM readings WHERE id >= %s ORDER BY id DESC LIMIT %s'
+                cursor.execute(sql, (start_id, limit))
+
         else:
-            sql = 'SELECT * FROM readings WHERE read_time BETWEEN %s AND %s'
-            cursor.execute(sql, (start_date, end_date, ))
+            if start_date is None and end_date is None:
+                sql = 'SELECT * FROM readings'
+                cursor.execute(sql)
+            elif start_date is not None and end_date is None:
+                sql = 'SELECT * FROM readings WHERE read_time >= %s'
+                cursor.execute(sql, (start_date, ))
+            elif start_date is None and end_date is not None:
+                sql = 'SELECT * FROM readings WHERE read_time <= %s'
+                cursor.execute(sql, (end_date, ))
+            else:
+                sql = 'SELECT * FROM readings WHERE read_time BETWEEN %s AND %s'
+                cursor.execute(sql, (start_date, end_date, ))
 
-    result = cursor.fetchall()
-    cursor.close()
-    db.close()
+        result = cursor.fetchall()
+        cursor.close()
+        db.close()
 
-    tz_name = str(tzlocal.get_localzone())
-    tz = pytz.timezone(tz_name)
-    for i in range(len(result)):
-        dt = tz.localize(result[i]['read_time'])
-        iso = dt.isoformat()
-        result[i]['read_time'] = iso
+        tz_name = str(tzlocal.get_localzone())
+        tz = pytz.timezone(tz_name)
+        for i in range(len(result)):
+            dt = tz.localize(result[i]['read_time'])
+            iso = dt.isoformat()
+            result[i]['read_time'] = iso
 
-    return json.dumps(result)
+        return json.dumps(result)
+    except Exception:
+        return "error"
 
 
 @app.route('/api/stats')
