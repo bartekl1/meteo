@@ -63,6 +63,11 @@ pms5003_values = {
 }
 pms5003_loaded = None
 
+stats = None
+stats_loaded = None
+
+started = datetime.datetime.now()
+
 
 def load_ds18b20():
     try:
@@ -156,10 +161,106 @@ def measure():
         time.sleep(2)
 
 
+def load_stats():
+    global stats, stats_loaded
+    while True:
+        try:
+            tz_name = str(tzlocal.get_localzone())
+            tz = pytz.timezone(tz_name)
+
+            db = mysql.connector.connect(**configs['mysql'])
+            cursor = db.cursor(dictionary=True)
+
+            sql = 'SELECT COUNT(id) FROM readings'
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            rows_count = result[0]['COUNT(id)']
+
+            res = {
+                "status": "ok",
+                "readings_count": rows_count,
+            }
+            check = {
+                "ds18b20": {
+                    "temperature": "ds18b20_temperature"
+                },
+                "bme280": {
+                    "temperature": "bme280_temperature",
+                    "humidity": "bme280_humidity",
+                    "pressure": "bme280_pressure"
+                },
+                "pms5003": {
+                    "pm1.0": "pms5003_pm_1_0",
+                    "pm2.5": "pms5003_pm_2_5",
+                    "pm10": "pms5003_pm_10"
+                }
+            }
+
+            for sensor, values in check.items():
+                res[sensor] = {}
+                for key, name in values.items():
+                    sql = f'SELECT id, {name}, read_time FROM readings WHERE {name} = (SELECT MIN({name}) FROM readings);'
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    dt = tz.localize(result[0]['read_time'])
+                    iso = dt.isoformat()
+                    date = iso
+                    min_value = {
+                        "id": result[0]["id"],
+                        "read_time": date,
+                        "value": result[0][name]
+                    }
+
+                    sql = f'SELECT id, {name}, read_time FROM readings WHERE {name} = (SELECT MAX({name}) FROM readings);'
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    dt = tz.localize(result[0]['read_time'])
+                    iso = dt.isoformat()
+                    date = iso
+                    max_value = {
+                        "id": result[0]["id"],
+                        "read_time": date,
+                        "value": result[0][name]
+                    }
+
+                    sql = f'SELECT AVG({name}) FROM readings'
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    avg_value = {
+                        'value': int(result[0][f'AVG({name})'])
+                    }
+
+                    amp_value = {
+                        'value': max_value['value'] - min_value['value']
+                    }
+
+                    res[sensor][key] = {
+                        "min": min_value,
+                        "max": max_value,
+                        "avg": avg_value,
+                        "amp": amp_value
+                    }
+
+            cursor.close()
+            db.close()
+
+            stats = res
+        except Exception:
+            if stats_loaded is not None and (datetime.datetime.now() - stats_loaded).seconds > 5 * 60:
+                stats = None
+                stats_loaded = None
+                time.sleep(30)
+                continue
+
+        time.sleep(2 * 60)
+
+
 @app.before_first_request
 def start_threads():
     measure_thread = threading.Thread(target=measure)
+    stats_thread = threading.Thread(target=load_stats)
     measure_thread.start()
+    stats_thread.start()
 
 
 @app.route('/favicon.ico')
@@ -293,317 +394,13 @@ def archive_readings_api():
 
 
 @app.route('/api/stats')
-def stats():
-    tz_name = str(tzlocal.get_localzone())
-    tz = pytz.timezone(tz_name)
-
-    db = mysql.connector.connect(**configs['mysql'])
-    cursor = db.cursor(dictionary=True)
-
-    sql = 'SELECT COUNT(id) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    rows_count = result[0]['COUNT(id)']
-
-    sql = 'SELECT id, bme280_temperature, read_time FROM readings WHERE bme280_temperature = (SELECT MIN(bme280_temperature) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_bme280_temperature = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_temperature"]
-    }
-
-    sql = 'SELECT id, bme280_temperature, read_time FROM readings WHERE bme280_temperature = (SELECT MAX(bme280_temperature) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_bme280_temperature = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_temperature"]
-    }
-
-    sql = 'SELECT AVG(bme280_temperature) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_bme280_temperature = {
-        'value': result[0]['AVG(bme280_temperature)']
-    }
-
-    amp_bme280_temperature = {
-        'value': max_bme280_temperature['value'] - min_bme280_temperature['value']
-    }
-
-    sql = 'SELECT id, bme280_humidity, read_time FROM readings WHERE bme280_humidity = (SELECT MIN(bme280_humidity) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_bme280_humidity = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_humidity"]
-    }
-
-    sql = 'SELECT id, bme280_humidity, read_time FROM readings WHERE bme280_humidity = (SELECT MAX(bme280_humidity) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_bme280_humidity = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_humidity"]
-    }
-
-    sql = 'SELECT AVG(bme280_humidity) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_bme280_humidity = {
-        'value': result[0]['AVG(bme280_humidity)']
-    }
-
-    amp_bme280_humidity = {
-        'value': max_bme280_humidity['value'] - min_bme280_humidity['value']
-    }
-
-    sql = 'SELECT id, bme280_pressure, read_time FROM readings WHERE bme280_pressure = (SELECT MIN(bme280_pressure) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_bme280_pressure = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_pressure"]
-    }
-
-    sql = 'SELECT id, bme280_pressure, read_time FROM readings WHERE bme280_pressure = (SELECT MAX(bme280_pressure) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_bme280_pressure = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["bme280_pressure"]
-    }
-
-    sql = 'SELECT AVG(bme280_pressure) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_bme280_pressure = {
-        'value': result[0]['AVG(bme280_pressure)']
-    }
-
-    amp_bme280_pressure = {
-        'value': max_bme280_pressure['value'] - min_bme280_pressure['value']
-    }
-
-    sql = 'SELECT id, ds18b20_temperature, read_time FROM readings WHERE ds18b20_temperature = (SELECT MIN(ds18b20_temperature) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_ds18b20_temperature = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["ds18b20_temperature"]
-    }
-
-    sql = 'SELECT id, ds18b20_temperature, read_time FROM readings WHERE ds18b20_temperature = (SELECT MAX(ds18b20_temperature) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_ds18b20_temperature = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["ds18b20_temperature"]
-    }
-
-    sql = 'SELECT AVG(ds18b20_temperature) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_ds18b20_temperature = {
-        'value': result[0]['AVG(ds18b20_temperature)']
-    }
-
-    amp_ds18b20_temperature = {
-        'value': max_ds18b20_temperature['value'] - min_ds18b20_temperature['value']
-    }
-
-    sql = 'SELECT id, pms5003_pm_1_0, read_time FROM readings WHERE pms5003_pm_1_0 = (SELECT MIN(pms5003_pm_1_0) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_pms5003_pm_1_0 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_1_0"]
-    }
-
-    sql = 'SELECT id, pms5003_pm_1_0, read_time FROM readings WHERE pms5003_pm_1_0 = (SELECT MAX(pms5003_pm_1_0) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_pms5003_pm_1_0 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_1_0"]
-    }
-
-    sql = 'SELECT AVG(pms5003_pm_1_0) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_pms5003_pm_1_0 = {
-        'value': float(result[0]['AVG(pms5003_pm_1_0)'])
-    }
-
-    amp_pms5003_pm_1_0 = {
-        'value': max_pms5003_pm_1_0['value'] - min_pms5003_pm_1_0['value']
-    }
-
-    sql = 'SELECT id, pms5003_pm_2_5, read_time FROM readings WHERE pms5003_pm_2_5 = (SELECT MIN(pms5003_pm_2_5) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_pms5003_pm_2_5 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_2_5"]
-    }
-
-    sql = 'SELECT id, pms5003_pm_2_5, read_time FROM readings WHERE pms5003_pm_2_5 = (SELECT MAX(pms5003_pm_2_5) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_pms5003_pm_2_5 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_2_5"]
-    }
-
-    sql = 'SELECT AVG(pms5003_pm_2_5) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_pms5003_pm_2_5 = {
-        'value': float(result[0]['AVG(pms5003_pm_2_5)'])
-    }
-
-    amp_pms5003_pm_2_5 = {
-        'value': max_pms5003_pm_2_5['value'] - min_pms5003_pm_2_5['value']
-    }
-
-    sql = 'SELECT id, pms5003_pm_10, read_time FROM readings WHERE pms5003_pm_10 = (SELECT MIN(pms5003_pm_10) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    min_pms5003_pm_10 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_10"]
-    }
-
-    sql = 'SELECT id, pms5003_pm_10, read_time FROM readings WHERE pms5003_pm_10 = (SELECT MAX(pms5003_pm_10) FROM readings);'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    dt = tz.localize(result[0]['read_time'])
-    iso = dt.isoformat()
-    date = iso
-    max_pms5003_pm_10 = {
-        "id": result[0]["id"],
-        "read_time": date,
-        "value": result[0]["pms5003_pm_10"]
-    }
-
-    sql = 'SELECT AVG(pms5003_pm_10) FROM readings'
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    avg_pms5003_pm_10 = {
-        'value': float(result[0]['AVG(pms5003_pm_10)'])
-    }
-
-    amp_pms5003_pm_10 = {
-        'value': max_pms5003_pm_10['value'] - min_pms5003_pm_10['value']
-    }
-
-    cursor.close()
-    db.close()
-
-    return {
-        "readings_count": rows_count,
-        "bme280": {
-            "temperature": {
-                "min": min_bme280_temperature,
-                "max": max_bme280_temperature,
-                "avg": avg_bme280_temperature,
-                "amp": amp_bme280_temperature
-            },
-            "humidity": {
-                "min": min_bme280_humidity,
-                "max": max_bme280_humidity,
-                "avg": avg_bme280_humidity,
-                "amp": amp_bme280_humidity
-            },
-            "pressure": {
-                "min": min_bme280_pressure,
-                "max": max_bme280_pressure,
-                "avg": avg_bme280_pressure,
-                "amp": amp_bme280_pressure
-            }
-        },
-        "ds18b20": {
-            "temperature": {
-                "min": min_ds18b20_temperature,
-                "max": max_ds18b20_temperature,
-                "avg": avg_ds18b20_temperature,
-                "amp": amp_ds18b20_temperature
-            }
-        },
-        "pms5003": {
-            "pm1.0": {
-                "min": min_pms5003_pm_1_0,
-                "max": max_pms5003_pm_1_0,
-                "avg": avg_pms5003_pm_1_0,
-                "amp": amp_pms5003_pm_1_0
-            },
-            "pm2.5": {
-                "min": min_pms5003_pm_2_5,
-                "max": max_pms5003_pm_2_5,
-                "avg": avg_pms5003_pm_2_5,
-                "amp": amp_pms5003_pm_2_5
-            },
-            "pm10": {
-                "min": min_pms5003_pm_10,
-                "max": max_pms5003_pm_10,
-                "avg": avg_pms5003_pm_10,
-                "amp": amp_pms5003_pm_10
-            }
-        }
-    }
+def stats_api():
+    global stats, started
+    while stats is None and (datetime.datetime.now() - started).seconds < 60:
+        time.sleep(1)
+    if stats is None:
+        return {"status": "error"}
+    return stats
 
 
 if __name__ == '__main__':
