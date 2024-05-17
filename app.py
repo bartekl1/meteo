@@ -287,6 +287,10 @@ def index():
 def current_reading_api():
     global ds18b20_values, ds18b20_loaded, bme280_values, bme280_loaded, pms5003_values, pms5003_loaded
 
+    while (ds18b20_loaded is None or bme280_loaded is None or pms5003_loaded is None) \
+            and (datetime.datetime.now() - started).seconds < 10:
+        time.sleep(1)
+
     tz_name = str(tzlocal.get_localzone())
     tz = pytz.timezone(tz_name)
     dt = tz.localize(datetime.datetime.now())
