@@ -1,5 +1,10 @@
 # 🕑 Rejestr zmian
 
+## 1.4
+
+- Ulepszono ładowanie bieżących odczytów i statystyk
+- Inne poprawki i ulepszenia
+
 ## 1.3
 
 - Naprawiono błąd czujnika jakości powietrza

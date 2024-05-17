@@ -1,5 +1,10 @@
 # 🕑 Changelog
 
+## 1.4
+
+- Improved loading of current readings and statistics
+- Other fixes and improvements
+
 ## 1.3
 
 - Fixed air quality sensor bug
