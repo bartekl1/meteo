@@ -254,9 +254,10 @@ def load_stats():
 
         time.sleep(2 * 60)
 
-
-@app.before_first_request
+@app.before_request
 def start_threads():
+    app.before_request_funcs[None].remove(start_threads)
+
     measure_thread = threading.Thread(target=measure)
     stats_thread = threading.Thread(target=load_stats)
     measure_thread.start()
