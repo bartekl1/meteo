@@ -227,7 +227,7 @@ def load_stats():
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     avg_value = {
-                        'value': int(result[0][f'AVG({name})'])
+                        'value': result[0][f'AVG({name})']
                     }
 
                     amp_value = {
