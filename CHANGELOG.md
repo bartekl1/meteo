@@ -1,5 +1,9 @@
 # 🕑 Changelog
 
+## 1.4.1
+
+- Display average as float instead of integer
+
 ## 1.4
 
 - Improved loading of current readings and statistics
