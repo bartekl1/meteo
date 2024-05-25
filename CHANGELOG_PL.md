@@ -1,5 +1,9 @@
 # 🕑 Rejestr zmian
 
+## 1.4.1
+
+- Wyświetlaj średnią jako liczbę zmiennoprzecinkową zamiast całkowitej
+
 ## 1.4
 
 - Ulepszono ładowanie bieżących odczytów i statystyk
